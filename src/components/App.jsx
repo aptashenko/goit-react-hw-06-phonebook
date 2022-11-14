@@ -4,17 +4,16 @@ import ContactList from "./ContactList/ContactList";
 import Title from "./Title/Title";
 import Filter from "./Filter/Filter";
 import ContactItem from "./ContactItem/ContactItem";
-import { addContact, deleteContact } from "redux/store";
+import { addContact, deleteContact, setFilter } from "redux/store";
 import { useSelector, useDispatch } from "react-redux";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 export default function App() {
 
   const initialContacts = useSelector(state => state.contacts);
+  const filter = useSelector(state => state.filter);
+  
   const dispatch = useDispatch();
-
-
-  const [filter, setFilter] = useState('');
 
   const handleContactForm = (data) => {
     const isContactExist = initialContacts.some(({name}) => name === data.name);
@@ -26,7 +25,7 @@ export default function App() {
   }
 
   const handleFilter = (e) => {
-    setFilter(e.target.value.toLowerCase());
+    dispatch(setFilter(e.target.value.toLowerCase()));
   }
 
   const filteredContacts = initialContacts.filter(({name}) => name.toLowerCase().includes(filter));

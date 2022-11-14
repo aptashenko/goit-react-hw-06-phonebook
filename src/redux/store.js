@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { createAction, createReducer } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
 
 const initialContacts = [
@@ -9,16 +9,37 @@ const initialContacts = [
     { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
 ];
 
-export const addContact = createAction('contacts/addContact');
-export const deleteContact = createAction('contacts/deleteContact');
+const localStorageContacts = localStorage.getItem('contacts') ? JSON.parse(localStorage.getItem('contacts')) : initialContacts;
 
-const myReducer = createReducer(initialContacts, {
-    [addContact]: (state, action) => [...state, action.payload],
-    [deleteContact]: (state, action) => state.filter(({id}) => id !== action.payload)
+const contactsSlicer = createSlice({
+    name: 'allContacts',
+    initialState: localStorageContacts,
+    reducers: {
+        addContact(state, action) {
+            state.push(action.payload);
+        },
+        deleteContact(state, action) {
+           return state.filter(item => item.id !== action.payload);
+        }
+    }
 })
+
+const filterSlicer = createSlice({
+    name: 'filter',
+    initialState: '',
+    reducers: {
+        setFilter(state, action) {
+            return state = action.payload;
+        }
+    }
+})
+
+export const { addContact, deleteContact } = contactsSlicer.actions;
+export const { setFilter } = filterSlicer.actions;
 
 export const store = configureStore({
     reducer: {
-      contacts: myReducer,
+        contacts: contactsSlicer.reducer,
+        filter: filterSlicer.reducer,
   },
 })
